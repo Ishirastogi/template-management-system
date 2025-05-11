@@ -92,8 +92,6 @@ app.get("/api/forms/counts", async (req, res) => {
   }
 });
 
-
-
 app.post("/api/forms/:id/status", async (req, res) => {
   const { id } = req.params;
   const { status, data, modification } = req.body; // ✅ Fix: Using correct field name
@@ -321,7 +319,6 @@ app.get("/api/approval-authorities", async (req, res) => {
   }
 });
 
-
 app.post("/api/send-email", async (req, res) => {
   try {
     const { email, subject, body, attachments } = req.body;
@@ -388,26 +385,27 @@ app.post("/api/form/submit", upload.single("file"), async (req, res) => {
 
     await form.save();
 
-    // Send email notification with the form details
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+    try {
+      // Send email notification with the form details
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
 
-    const templateListURL = process.env.REACT_APP_FRONTEND_URL
-      ? `${process.env.REACT_APP_FRONTEND_URL}/templatelist`
-      : "http://localhost:3000/templatelist"; // Fallback for testing
+      const templateListURL = process.env.REACT_APP_FRONTEND_URL
+        ? `${process.env.REACT_APP_FRONTEND_URL}/templatelist`
+        : "http://localhost:3000/templatelist"; // Fallback for testing
 
-    console.log("Generated Link:", templateListURL); // Debugging line
+      console.log("Generated Link:", templateListURL); // Debugging line
 
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: selectedEmployee.email,
-      subject: "Template Approval",
-      html: `
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: selectedEmployee.email,
+        subject: "Template Approval",
+        html: `
     <p>Kindly check and approve the below template via the link:</p>
     <p><a href="${templateListURL}" target="_blank">${templateListURL}</a></p>
     <p><strong>From:</strong> ${from}</p>
@@ -417,17 +415,20 @@ app.post("/api/form/submit", upload.single("file"), async (req, res) => {
     <p><strong>Unit:</strong> ${unit}</p>
     <p><strong>From Card No:</strong> ${fromcardno}</p>
 `,
-      ...(uploadedFile && {
-        attachments: [
-          {
-            filename: uploadedFile.originalname,
-            path: uploadedFile.path,
-          },
-        ],
-      }),
-    };
+        ...(uploadedFile && {
+          attachments: [
+            {
+              filename: uploadedFile.originalname,
+              path: uploadedFile.path,
+            },
+          ],
+        }),
+      };
 
-    await transporter.sendMail(mailOptions);
+      await transporter.sendMail(mailOptions);
+    } catch (err) {
+      console.log("Error sending email:", err.message);
+    }
     res.status(201).json({ message: "Form submitted successfully!" });
   } catch (error) {
     console.error("Error:", error);
