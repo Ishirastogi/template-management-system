@@ -9,11 +9,13 @@ import {
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
+const API_URL = process.env.REACT_APP_BACKEND_API_URL;
+
 const Home = () => {
   const [counts, setCounts] = useState({ approved: 0, rejected: 0, modified: 0 });
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/forms/counts")
+    fetch(`${API_URL}/forms/counts`)
       .then((res) => res.json())
       .then((data) => {
         console.log("📊 Form Counts Data:", data);
