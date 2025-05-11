@@ -425,6 +425,8 @@ app.post("/api/form/submit", upload.single("file"), async (req, res) => {
         }),
       };
 
+      console.log("Email Options:", mailOptions);
+
       await transporter.sendMail(mailOptions);
     } catch (err) {
       console.log("Error sending email:", err.message);
