@@ -181,8 +181,8 @@ app.post("/api/forms/:id/status", async (req, res) => {
       };
       console.log("Sending Email", mailOptions);
 
-      await transporter.sendMail(mailOptions);
-    }
+      await transporter.sendMail(mailOptions);}
+   
     return res.status(200).json({
       message: "Status updated successfully",
       updatedForm: updatedForm,
