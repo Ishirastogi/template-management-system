@@ -397,7 +397,7 @@ app.post("/api/form/submit", upload.single("file"), async (req, res) => {
 
       const templateListURL = process.env.REACT_APP_FRONTEND_URL
         ? `${process.env.REACT_APP_FRONTEND_URL}/templatelist`
-        : "http://localhost:3000/templatelist"; // Fallback for testing
+        : "https://template-management-system-omega.vercel.app/login"; // Fallback for testing
 
       console.log("Generated Link:", templateListURL); // Debugging line
 
